@@ -8,6 +8,7 @@ int main()
     obj.binding();
     obj.listening(10);
     //obj.send_text("hello, it's server");
-    obj.receive_text();
+    //obj.receive_text();
+    obj.receive_file();
     return 0;
 }

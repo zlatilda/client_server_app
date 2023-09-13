@@ -72,7 +72,7 @@ int server_socket::listening(int backlog_queue_size)
     return is_listening;
 }
 
-int server_socket::send_text(const char* message)
+void server_socket::send_text(const char* message)
 {
     struct sockaddr_in new_addr;
     addr_size = sizeof(new_addr);
@@ -92,11 +92,9 @@ int server_socket::send_text(const char* message)
     }
 
     printf("SERVER: ", message);
-
-    return is_sent;
 }
 
-int server_socket::receive_text()
+void server_socket::receive_text()
 {
     struct sockaddr_in new_addr;
     addr_size = sizeof(new_addr);
@@ -118,4 +116,35 @@ int server_socket::receive_text()
         exit(1);
     }
     printf("RECIEVED MESSAGE: ", buffer);
+}
+
+void server_socket::receive_file()
+{
+    struct sockaddr_in new_addr;
+    addr_size = sizeof(new_addr);
+    int new_sock = accept(sockfd, (struct sockaddr*)&new_addr, &addr_size);
+
+    write_file(new_sock);
+
+    printf("[+]Data written in the file successfully.\n");
+}
+
+void server_socket::write_file(int sockfd){
+    int n;
+    FILE *fp;
+    const char *filename = "file.txt";
+    char buffer[SIZE];
+
+    fp = fopen(filename, "w");
+    while (1)
+    {
+        n = recv(sockfd, buffer, SIZE, 0);
+        if (n <= 0)
+        {
+          break;
+        }
+
+        fprintf(fp, "%s", buffer);
+        bzero(buffer, SIZE);
+    }
 }
