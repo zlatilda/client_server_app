@@ -88,5 +88,19 @@ void client_socket::send_file(const char* filename)
     }
 }
 
+void client_socket::send_text(const char* message)
+{
+    char buffer[SIZE];
+    strcpy(buffer, message);
+
+    int is_sent = send(sockfd, buffer, strlen(buffer), NULL);
+
+    if (is_sent < 0)
+    {
+        perror("[-]Error in sending a message.");
+        exit(1);
+    }
+}
+
 
 

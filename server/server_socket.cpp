@@ -117,7 +117,7 @@ void server_socket::receive_text()
         perror("[-]Error in receiving a message");
         exit(1);
     }
-    printf("RECIEVED MESSAGE: ", buffer);
+    printf("RECIEVED MESSAGE: %s\n", buffer);
 }
 
 void server_socket::receive_file(const char* filename)
