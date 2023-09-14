@@ -15,29 +15,27 @@
 
 #define SIZE 1024
 
-#ifndef SERVER_SOCKET_H
-#define SERVER_SOCKET_H
+#ifndef CLIENT_SOCKET_H
+#define CLIENT_SOCKET_H
 
-class server_socket
+class client_socket
 {
 private:
     const char *ip;
     int port;
     int sockfd;
     struct sockaddr_in server_addr;
-    socklen_t addr_size;  // client
 
     void write_file(int, const char*);
 public:
-    server_socket();
-    server_socket(int);
-    int binding();
-    int listening(int);
+    client_socket();
+    client_socket(int);
+    void connect_to_server();
     void send_text(const char*); // ??
     void send_file(const char*);
     void receive_text();                // ??
     void receive_file(const char*);
-    ~server_socket();
+    ~client_socket();
 };
 
 #endif

@@ -34,6 +34,8 @@ server_socket::server_socket(int port)
 
 server_socket::~server_socket()
 {
+    close(sockfd);
+
     #ifdef _WIN32
         WSACleanup();
     #endif
@@ -118,21 +120,40 @@ void server_socket::receive_text()
     printf("RECIEVED MESSAGE: ", buffer);
 }
 
-void server_socket::receive_file()
+void server_socket::receive_file(const char* filename)
 {
     struct sockaddr_in new_addr;
     addr_size = sizeof(new_addr);
     int new_sock = accept(sockfd, (struct sockaddr*)&new_addr, &addr_size);
 
-    write_file(new_sock);
+    write_file(new_sock, filename);
 
     printf("[+]Data written in the file successfully.\n");
+
+    close(new_sock);
 }
 
-void server_socket::write_file(int sockfd){
+void server_socket::send_file(const char* filename)
+{
+    FILE* fp;
+    fp = fopen(filename, "r");
+    char data[SIZE] = {0};
+
+    while(fgets(data, SIZE, fp) != NULL)
+    {
+        if (send(sockfd, data, sizeof(data), 0) == -1)
+        {
+            perror("[-]Error in sending file.");
+            exit(1);
+        }
+        bzero(data, SIZE);
+    }
+}
+
+void server_socket::write_file(int sockfd, const char* filename){
     int n;
-    FILE *fp;
-    const char *filename = "file.txt";
+    FILE* fp;
+    //const char* filename = "file.txt";
     char buffer[SIZE];
 
     fp = fopen(filename, "w");
