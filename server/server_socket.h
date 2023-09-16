@@ -24,6 +24,7 @@ private:
     const char *ip;
     int port;
     int sockfd;
+    int new_sock;
     struct sockaddr_in server_addr;
     socklen_t addr_size;  // client
 
@@ -31,11 +32,12 @@ private:
 public:
     server_socket();
     server_socket(int);
-    int binding();
-    int listening(int);
+    void binding();
+    void listening(int);
+    void accept_connection();
     void send_text(const char*); // ??
     void send_file(const char*);
-    void receive_text();                // ??
+    void receive_text();
     void receive_file(const char*);
     ~server_socket();
 };

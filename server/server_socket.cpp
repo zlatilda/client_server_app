@@ -9,7 +9,7 @@ server_socket::server_socket()
 
     this->ip = "127.0.0.1";
     this->port = 7500;
-    this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    this->sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     if(sockfd < 0)
     {
@@ -35,13 +35,14 @@ server_socket::server_socket(int port)
 server_socket::~server_socket()
 {
     close(sockfd);
+    close(new_sock);
 
     #ifdef _WIN32
         WSACleanup();
     #endif
 }
 
-int server_socket::binding()
+void server_socket::binding()
 {
     this->server_addr.sin_family = AF_INET;
     this->server_addr.sin_port = port;
@@ -54,11 +55,9 @@ int server_socket::binding()
         exit(1);
     }
     printf("[+]Binding successfully.\n");
-
-    return is_binded;
 }
 
-int server_socket::listening(int backlog_queue_size)
+void server_socket::listening(int backlog_queue_size)
 {
     int is_listening = listen(sockfd, backlog_queue_size);
     if( is_listening == 0)
@@ -70,45 +69,40 @@ int server_socket::listening(int backlog_queue_size)
         perror("[-]Error in listening");
         exit(1);
     }
+}
 
-    return is_listening;
+void server_socket::accept_connection()
+{
+    struct sockaddr_in new_addr;
+    addr_size = sizeof(new_addr);
+
+    this->new_sock = accept(sockfd, (struct sockaddr*)&new_addr, &addr_size);
+    if (new_sock< 0)
+    {
+        perror("[-]Error accepting connection");
+        exit(1);
+    }
 }
 
 void server_socket::send_text(const char* message)
 {
-    struct sockaddr_in new_addr;
-    addr_size = sizeof(new_addr);
+    char buffer[SIZE];
+    strcpy(buffer, message);
 
-    int new_sock = accept(sockfd, (struct sockaddr*)&new_addr, &addr_size);
-    if (new_sock< 0)
-    {
-        perror("[-]Error accepting connection");
-        exit(1);
-    }
+    int is_sent = send(new_sock, buffer, strlen(buffer), NULL);
+    //printf("MESSAGE: %s\n", buffer);
 
-    int is_sent = send(new_sock, message, SIZE , NULL);
     if (is_sent < 0)
     {
-        perror("[-]Error writing to socket");
+        perror("[-]Error in sending a message.");
         exit(1);
     }
 
-    printf("SERVER: ", message);
+    //printf("MESSAGE: %s\n", message);
 }
 
 void server_socket::receive_text()
 {
-    struct sockaddr_in new_addr;
-    addr_size = sizeof(new_addr);
-
-    int new_sock = accept(sockfd, (struct sockaddr*)&new_addr, &addr_size);
-
-    if (new_sock< 0)
-    {
-        perror("[-]Error accepting connection");
-        exit(1);
-    }
-
     char buffer[SIZE];
     memset(buffer, 0, SIZE);
     int is_received = recv(new_sock, buffer, SIZE, NULL);
@@ -122,15 +116,10 @@ void server_socket::receive_text()
 
 void server_socket::receive_file(const char* filename)
 {
-    struct sockaddr_in new_addr;
-    addr_size = sizeof(new_addr);
-    int new_sock = accept(sockfd, (struct sockaddr*)&new_addr, &addr_size);
-
     write_file(new_sock, filename);
 
     printf("[+]Data written in the file successfully.\n");
 
-    close(new_sock);
 }
 
 void server_socket::send_file(const char* filename)

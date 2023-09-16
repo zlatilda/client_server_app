@@ -9,7 +9,7 @@ client_socket::client_socket()
 
     this->ip = "127.0.0.1";
     this->port = 7500;
-    this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    this->sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     if(sockfd < 0)
     {
@@ -86,6 +86,8 @@ void client_socket::send_file(const char* filename)
         }
         bzero(data, SIZE);
     }
+
+    printf("[+]File sent successfully.");
 }
 
 void client_socket::send_text(const char* message)
@@ -102,5 +104,20 @@ void client_socket::send_text(const char* message)
     }
 }
 
+const char* client_socket::receive_text()
+{
+    char buffer[SIZE];
+    memset(buffer, 0, SIZE);
+    int is_received = recv(sockfd, buffer, SIZE, NULL);
+    if(is_received < 0)
+    {
+        perror("[-]Error in receiving a message");
+        exit(1);
+    }
+    printf("RECIEVED MESSAGE: %s\n", buffer);
 
+    const char* recieved_text = buffer;
+
+    return recieved_text;
+}
 

@@ -25,15 +25,16 @@ private:
     int port;
     int sockfd;
     struct sockaddr_in server_addr;
+    socklen_t addr_size;
 
     void write_file(int, const char*);
 public:
     client_socket();
     client_socket(int);
     void connect_to_server();
-    void send_text(const char*); // ??
+    void send_text(const char*);
     void send_file(const char*);
-    void receive_text();                // ??
+    const char* receive_text();
     void receive_file(const char*);
     ~client_socket();
 };
