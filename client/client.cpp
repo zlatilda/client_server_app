@@ -12,17 +12,13 @@ const char* list_of_files(const char* folder_path)
     DIR *dir;
     struct dirent *ent;
     dir = opendir(folder_path);
-    int i = 0;
+
     if (dir != NULL)
     {
         while ((ent = readdir (dir)) != NULL)
         {
-            if(i > 1)
-            {
-                printf ("%s\n", ent->d_name);
-                files = files + string(ent->d_name) + " ";
-            }
-            i++;
+            printf ("%s\n", ent->d_name);
+            files = files + string(ent->d_name) + " ";
         }
         closedir (dir);
     }
@@ -31,7 +27,10 @@ const char* list_of_files(const char* folder_path)
         perror ("Could not open directory");
     }
 
-    return files.c_str();
+    char* ccx = new char[files.length() + 1];
+    copy(files.begin(), files.end(), ccx);
+
+    return ccx;
 }
 
 int main()

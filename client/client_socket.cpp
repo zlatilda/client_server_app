@@ -1,3 +1,4 @@
+
 #include "client_socket.h"
 
 client_socket::client_socket()
@@ -87,7 +88,7 @@ void client_socket::send_file(const char* filename)
         bzero(data, SIZE);
     }
 
-    printf("[+]File sent successfully.");
+    printf("[+]File sent successfully.\n");
 }
 
 void client_socket::send_text(const char* message)
@@ -120,4 +121,3 @@ const char* client_socket::receive_text()
 
     return recieved_text;
 }
-
