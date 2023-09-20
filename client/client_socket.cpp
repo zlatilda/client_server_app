@@ -96,7 +96,7 @@ void client_socket::send_text(const char* message)
     char buffer[SIZE];
     strcpy(buffer, message);
 
-    int is_sent = send(sockfd, buffer, strlen(buffer), NULL);
+    int is_sent = send(sockfd, buffer, strlen(buffer), 0);
 
     if (is_sent < 0)
     {
@@ -109,7 +109,7 @@ const char* client_socket::receive_text()
 {
     char buffer[SIZE];
     memset(buffer, 0, SIZE);
-    int is_received = recv(sockfd, buffer, SIZE, NULL);
+    int is_received = recv(sockfd, buffer, SIZE, 0);
     if(is_received < 0)
     {
         perror("[-]Error in receiving a message");

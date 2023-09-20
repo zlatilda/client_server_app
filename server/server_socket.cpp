@@ -30,6 +30,14 @@ server_socket::server_socket(int port)
     this->ip = "127.0.0.1";
     this->port = port;
     this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	
+	if(sockfd < 0)
+    {
+        perror("[-]Error in socket");
+        exit(1);
+    }
+	
+	printf("[+]Server socket created successfully.\n");
 }
 
 server_socket::~server_socket()
@@ -89,23 +97,20 @@ void server_socket::send_text(const char* message)
     char buffer[SIZE];
     strcpy(buffer, message);
 
-    int is_sent = send(new_sock, buffer, strlen(buffer), NULL);
-    //printf("MESSAGE: %s\n", buffer);
+    int is_sent = send(new_sock, buffer, strlen(buffer), 0);
 
     if (is_sent < 0)
     {
         perror("[-]Error in sending a message.");
         exit(1);
     }
-
-    //printf("MESSAGE: %s\n", message);
 }
 
 void server_socket::receive_text()
 {
     char buffer[SIZE];
     memset(buffer, 0, SIZE);
-    int is_received = recv(new_sock, buffer, SIZE, NULL);
+    int is_received = recv(new_sock, buffer, SIZE, 0);
     if(is_received == 0)
     {
         perror("[-]Error in receiving a message");
