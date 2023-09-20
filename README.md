@@ -8,3 +8,5 @@ Client/Server application to load files from remote HOST.
 - client sends the file to the server via port 7505
 
 Use makefiles to compile the code. There is a separate makefile for both client and server in corresponding directories.
+
+Works for both windows and linux.
